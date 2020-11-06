@@ -1,0 +1,17 @@
+{
+  "name": "mp3-to-text",
+  "version": "1.0.0",
+  "description": "Converts MP3 (given a dir) to text",
+  "main": "mp3-to-text.js",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "microsoft-cognitiveservices-speech-sdk": "^1.14.0",
+    "node-lame": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
