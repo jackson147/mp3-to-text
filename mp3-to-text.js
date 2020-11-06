@@ -30,34 +30,21 @@ function createRecognizer(audiofilename, audioLanguage) {
     return new sdk.SpeechRecognizer(speechConfig, audioConfig)
 }
 
+if(fs.existsSync('output/output_transcribed.txt')){
+    fs.rmSync('output/output_transcribed.txt')
+}
 
-let fileName = undefined
-fs.readdir(inputDir, (err, files) => {
+let files = fs.readdirSync(inputDir)
 
-    if(fileName == undefined){
-        fileName = files.shift()
-    }
+let fileName = files.shift()
+let previousFileName = undefined
 
-    let filePath = inputDir + fileName
-    let recognizer = createRecognizer(filePath, language)
+let filePath = inputDir + fileName
+let recognizer = createRecognizer(filePath, language)
 
-    recognizer.speechEndDetected = (s, e) => {
-        console.log(`(speechEndDetected) SessionId: ${e.sessionId}`)
-        recognizer.close()
-        recognizer = undefined
-        if(files.length != 0){
-            fileName = files.shift()
-            filePath = inputDir + fileName
-            recognizer = createRecognizer(filePath, language)
-            startRecognizer(recognizer, fileName)
-        }
-    }
-
-    startRecognizer(recognizer, fileName)
-});
+startRecognizer(recognizer, fileName)
 
 function startRecognizer(recognizer, filename){
-    outputText = ""
 
     recognizer.startContinuousRecognitionAsync(() => {
         console.log('Recognition started')
@@ -75,7 +62,14 @@ function startRecognizer(recognizer, filename){
         } else {
             console.log(`(recognized)  Reason: ${sdk.ResultReason[e.result.reason]} | Duration: ${e.result.duration} | Offset: ${e.result.offset}`)
             console.log(`Text: ${e.result.text}`)
-            fs.appendFileSync('output/' + filename + "_transcribed.txt", e.result.text);
+            
+            if(previousFileName != filename){
+                previousFileName = filename
+                let trackNum = filename.split(".")[0]
+                fs.appendFileSync('output/output_transcribed.txt', "\n\n" + e.result.text + "  (https://minio.newlinkedlist.xyz/cd-adventure/tracks/" + trackNum + ".mp3)");
+            }else{
+                fs.appendFileSync('output/output_transcribed.txt', "\n" + e.result.text);
+            }
         }
     }
 
@@ -85,6 +79,18 @@ function startRecognizer(recognizer, filename){
             str += ": " + e.errorDetails
         }
         console.log(str)
+    }
+
+    recognizer.speechEndDetected = (s, e) => {
+        console.log(`(speechEndDetected) SessionId: ${e.sessionId}`)
+        recognizer.close()
+        recognizer = undefined
+        if(files.length != 0){
+            fileName = files.shift()
+            filePath = inputDir + fileName
+            recognizer = createRecognizer(filePath, language)
+            startRecognizer(recognizer, fileName)
+        }
     }
 }
 
