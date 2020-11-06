@@ -1,12 +1,11 @@
 const fs = require('fs')
 const sdk = require("microsoft-cognitiveservices-speech-sdk")
-const Lame = require("node-lame").Lame
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
 
 const subscriptionKey = config.subscriptionKey
 const serviceRegion = config.serviceRegion
-const filename = "73.wav"
+const filename = "audio/78.wav"
 const language = "en-US"
 
 function createAudioConfig(filename) {

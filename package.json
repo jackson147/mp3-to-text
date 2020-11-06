@@ -5,8 +5,7 @@
   "main": "mp3-to-text.js",
   "dependencies": {
     "fs": "0.0.1-security",
-    "microsoft-cognitiveservices-speech-sdk": "^1.14.0",
-    "node-lame": "^1.2.2"
+    "microsoft-cognitiveservices-speech-sdk": "^1.14.0"
   },
   "devDependencies": {},
   "scripts": {
