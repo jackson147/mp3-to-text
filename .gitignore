@@ -3,3 +3,4 @@ audio/
 *.wav
 *.mp3
 config.json
+output/

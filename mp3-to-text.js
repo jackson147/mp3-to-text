@@ -31,32 +31,34 @@ function createRecognizer(audiofilename, audioLanguage) {
 }
 
 
-let file = undefined
+let fileName = undefined
 fs.readdir(inputDir, (err, files) => {
 
-    if(file == undefined){
-        file = files.shift()
+    if(fileName == undefined){
+        fileName = files.shift()
     }
 
-    let filename = inputDir + file
-    let recognizer = createRecognizer(filename, language)
+    let filePath = inputDir + fileName
+    let recognizer = createRecognizer(filePath, language)
 
     recognizer.speechEndDetected = (s, e) => {
         console.log(`(speechEndDetected) SessionId: ${e.sessionId}`)
         recognizer.close()
         recognizer = undefined
         if(files.length != 0){
-            file = files.shift()
-            filename = inputDir + file
-            recognizer = createRecognizer(filename, language)
-            startRecognizer(recognizer)
+            fileName = files.shift()
+            filePath = inputDir + fileName
+            recognizer = createRecognizer(filePath, language)
+            startRecognizer(recognizer, fileName)
         }
     }
 
-    startRecognizer(recognizer)
+    startRecognizer(recognizer, fileName)
 });
 
-function startRecognizer(recognizer){
+function startRecognizer(recognizer, filename){
+    outputText = ""
+
     recognizer.startContinuousRecognitionAsync(() => {
         console.log('Recognition started')
     },
@@ -73,6 +75,7 @@ function startRecognizer(recognizer){
         } else {
             console.log(`(recognized)  Reason: ${sdk.ResultReason[e.result.reason]} | Duration: ${e.result.duration} | Offset: ${e.result.offset}`)
             console.log(`Text: ${e.result.text}`)
+            fs.appendFileSync('output/' + filename + "_transcribed.txt", e.result.text);
         }
     }
 
